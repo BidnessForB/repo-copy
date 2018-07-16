@@ -26,6 +26,8 @@
     "command-line-args": "^5.0.2",
     "command-line-usage": "^5.0.5",
     "debug": "^3.1.0",
+    "deep-diff": "^1.0.1",
+    "hashmap": "^2.3.0",
     "httpdispatcher": "^2.0.1",
     "npm": "^6.1.0"
   },

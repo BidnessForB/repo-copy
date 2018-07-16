@@ -15,14 +15,22 @@ catch(err)
 
 function initHTTPServer() {
     var dispatcher = new HttpDispatcher();
-    dispatcher.onPost('/repo', function(req,res) {
+    dispatcher.onPost('/createRepo', function(req,res)
+    {
         var repo = new Repo();
-        repo.initRest(req,res);
-        repo.execute();
+        repo.execute(req,res,'create');
     });
+    dispatcher.onPost('/getRepoConfig', function(req,res) {
+        var repo = new Repo();
+        repo.execute(req,res,'get');
+    });
+    dispatcher.onPost('/repoAudit',function(req,res){
+        var repo = new Repo();
+        repo.execute(req,res,'audit');
+    })
     var server = http.createServer((request, response) => {
             try {
-                response.respond = function(status, msg, err)
+                response.respond = function(status,msg,err)
                 {
                     var respText = {};
                     respText.msg = msg;
