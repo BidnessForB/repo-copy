@@ -1,7 +1,7 @@
 /**
  * Created by bryancross on 7/13/18.
  */
-const Repo = require('./lib/repoController');
+const repoController = require('./lib/repoController');
 const cla = require('command-line-args');
 const clu = require('command-line-usage');
 
@@ -128,7 +128,7 @@ function validateArgs(args)
 async function execute()
 {
     var repoData;
-    var repo = new Repo();
+    var repo = new repoController();
     try
     {
         repoData = await repo.execute(args);
