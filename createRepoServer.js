@@ -1,4 +1,4 @@
-const Repo = require('./lib/repository.js');
+const Repo = require('./lib/repoController.js');
 const HttpDispatcher = require('httpdispatcher');
 const http = require('http');
 

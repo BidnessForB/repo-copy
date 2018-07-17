@@ -1,7 +1,7 @@
 /**
  * Created by bryancross on 7/13/18.
  */
-const Repo = require('./lib/repository');
+const Repo = require('./lib/repoController');
 const cla = require('command-line-args');
 const clu = require('command-line-usage');
 
