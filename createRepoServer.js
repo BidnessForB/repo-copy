@@ -18,15 +18,15 @@ function initHTTPServer() {
     dispatcher.onPost('/createRepo', function(req,res)
     {
         var repo = new Repo();
-        repo.execute(req,res,'create');
+        repo.executeRest(req,res,'create');
     });
     dispatcher.onPost('/getRepoConfig', function(req,res) {
         var repo = new Repo();
-        repo.execute(req,res,'get');
+        repo.executeRest(req,res,'get');
     });
     dispatcher.onPost('/repoAudit',function(req,res){
         var repo = new Repo();
-        repo.execute(req,res,'audit');
+        repo.executeRest(req,res,'audit');
     })
     var server = http.createServer((request, response) => {
             try {

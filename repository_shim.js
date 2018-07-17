@@ -11,6 +11,7 @@ const optionDefinitions = [
     ,{name: 'targetRepoOwner',alias:'o',type: String}
     ,{name: 'mode',alias:'m', type: String, defaultValue: 'get'}
     ,{name: 'help',alias:'h',type:Boolean}
+    ,{name: 'compareRepoURL',alias:'c',type:String}
 ]
 
 const clSections = [
@@ -26,6 +27,12 @@ const clSections = [
             ,alias: 't'
             ,typeLabel: '{underline url}'
             ,description: 'URL for the repository to copy or retrieve configuration info for.'
+        },
+        {
+            name: 'compareRepoURL'
+            ,alias: 'c'
+            ,typeLabel: '{underline url}'
+            ,description: 'URL to compare templateRepoURL to'
         },
         {
             name: 'mode'
@@ -73,6 +80,7 @@ const clSections = [
 ]
 
 const args = cla(optionDefinitions);
+
 if(args.help)
 {
     console.log(clu(clSections));
@@ -86,6 +94,8 @@ if(errs.length > 0)
     console.log(clu(clSections));
     process.exit(1);
 }
+
+execute();
 
 
 function validateArgs(args)
@@ -113,7 +123,21 @@ function validateArgs(args)
     return errs;
 }
 
-var repo = new Repo();
-repo.init(args);
-var repoData = repo.execute();
-console.log(repoData);
+
+
+async function execute()
+{
+    var repoData;
+    var repo = new Repo();
+    try
+    {
+        repoData = await repo.execute(args);
+        console.log(JSON.stringify(repoData));
+    }
+    catch(err)
+    {
+        console.log("Error: " + err.message);
+    }
+    process.exit(0);
+}
+
