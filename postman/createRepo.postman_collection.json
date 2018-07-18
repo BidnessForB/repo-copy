@@ -1,0 +1,140 @@
+{
+	"info": {
+		"_postman_id": "cfa1307c-8e79-444d-9d77-02641a54e999",
+		"name": "createRepo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CREATE repo",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "<YourPAT>"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t \"templateRepoURL\":\"https://github.com/bidnessforb/rebaseDemo\"\n\t,\"newRepoOwner\":\"bidnessforb\"\n\t,\"newRepoName\":\"ToysRUs\"\n\t,\"mode\":\"create\"\n\t,\"tokens\": [\n    [\"customer\", \"ToysRUs\"],\n    [\"PRP\", \"Bryan Cross\"],\n    [\"PRPEmail\", \"bryancross@github.com\"],\n    [\"PRPGitHubID\", \"@bryancross\"],\n    [\"CustomerLogoURL\", \"https://www.brandchannel.com/wp-content/uploads/2018/03/toys-r-us-inc-logo.jpg\"]\n    ]\n\t\t\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/repo",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"repo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET repo",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "<YourPAT>"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n\t{\"URL\":\"https://github.com/bidnessforb/rebasedemo\"}\n\t\n]\n\t\n"
+				},
+				"url": {
+					"raw": "http://localhost:3000/getRepoConfig",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"getRepoConfig"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Repo",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "token <YourPAT>"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"org\":\"bidnessforb\"\n\t,\"name\":\"foobarbatdork\"\n\t,\"description\":\"none\"\n}"
+				},
+				"url": {
+					"raw": "https://api.github.com/repos/bidnessforb/debasedDemo",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"repos",
+						"bidnessforb",
+						"debasedDemo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AUDIT repo",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "<YourPAT>"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t \"repo1URL\":\"https://github.com/bidnessforb/rebaseDemo\"\n\t ,\"repo2URL\":\"https://github.com/bidnessforb/rebaseDemo\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/repo",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"repo"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
