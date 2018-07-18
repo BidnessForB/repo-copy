@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "Create new GitHub repositories based on templates",
   "main": "createRepoController.js",
-  "bin": "./repo-copy_cli-shim.js",
+  "bin": {
+    "repo-copy": "./cli.js",
+    "start-server": "./createRepoController.js"
+  },
   "scripts": {
     "test": "xo && server.js"
   },

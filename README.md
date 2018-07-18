@@ -1,334 +1,156 @@
-# repo-template-lite
+# repo-copy
 
-Stripped down version of [repo-template](https://github.com/bryancross/repo-template-lite).  Logging and other
-non-essential bits removed.
+Utility program which:
+1. Retrieves complete repository configuration for one or more repos.
+1. Compares and returns differences in configuration between 2 repos.
+1. Creates a new repository, copying the configuration and content of a template repository
 
-Utility server which accepts requests to create new repositories based on 
-configuration files stored in a GitHub repo.  The server implements a standard GitHub workflow by creating
-a Pull Request in a configured repository with the parameters of the request.  
-When that Pull Request is merged, the server traps the event via a webhook and 
-automatically creates the new repository according to the configuration.
-
-Repo-template is designed work as part of a specially designated and configured repository which serves
-to accept and store repository requests.  Learn more about how to configure this repository [below](https://octodemo.com/rebelware/repo-template/blob/update-readme/README.md#request-repository)
+The application can be run as a REST service or a command line application.
 
 ### Getting Started
 
-1. Setup a repository to store your repository configuration pull requests (see  #request-repository below).
-2. Clone the `repo-template` repository.
-3. Run `./script/bootstrap.sh`
-4. Run `./script/tunnel.sh` to create an `ngrok` proxy for your webhooks to call.  Ensure your webhooks call this URL when you setup your Request Repository.
-5. Run ./script/repo_template.sh to start the server
-    `./script/repo_template.sh start`
-6. Make a REST call to the POST `/init` endpoint.  Include a properly scoped PAT in the Authentication header and a valid config in the body.
-7. make a REST call to the POST `/requestRepo` endpoint with the appropriate payload:
+1. Clone the [repo-copy repo](https://github.com/bidnessforb/repo-copy)
+1. Run `npm install`
+1. Run the server or the command line application with appropriate parameters (see below)
+
+### Running as a server
+
+To start the server:
+1. `cd` to the repo-copy project directory.
+1. Run `start-server`
+ 
+`start-server` takes an optional parameter, PORT.  Otherwise the server will listen
+on the default port, 3000.
+
+__NOTE:__ `package.json` includes the appropriate entries in the `bin` section that should install
+the `start-server` command on your machine after you run `npm install`.  Unfortunately it doesn't work
+reliably in my environment, probably due to node configuration wierdness.  So if the native command doesn't work,
+just use node:
+
+`node createRepocontroller.js <port>`
+
+See [REST API](#REST-API) for information on making REST calls to the server.
+
+### Running on the command line
+Assuming `npm install` worked as advertised, you can run repo-copy on the command line
+using the `repo-copy` command.  If not, run the shim using node:
+
+`node cli.js <args>`
+
+#### Arguments ####
+Arguments will vary depending on the _mode_ you're using.  
+
+|Alias|Name|type|values|Desc|
+|-----|----|----|------|----|
+| `-t`  |`--templateURL`  |url|      |URL for the repository to copy or retrieve configuration info for.    |
+| `-c`  |`--compareRepoURL`|url|     |URL to compare to `templateURL`  |
+| `-m`  |`--mode`|string|`get`,`audit`,`create`|`get` - return configuration data<br>`create` - use configuration of `templateURL` to create a new repository<br>`audit` - Return configuration differences between the `templateURL` and `compareRepoURL`    |
+| `-n`   |`--targetRepoName`    |String    |      |`mode=create` only. Name of the repo to be created    |
+| `-o`   |`--targetRepoOwner`    |String    |      |`mode=create` only. Owner (org) of the repo to be created    |
+|`-h`  |`--help`    |    |      | Display help   |
+|`-k`  |`--tokens`    |array  |      |`mode=create` only. List of key/value pairs, used to substitute values for tokens in template repository content copied into a new repository.  __NOTE:__Not implemented for CI  |
+ 
+Examples
+
+1. Retrieve repository configuration information 
+
+`$ node repo-copy -t https://github.com/myorg/myrepo`                           
+  
+2. Create a new repository copying the configuration of a template repository   
+
+`$ node repo-copy -t https://github.com/myorg/myrepo -n myNewRepo -o myOtherOrg`           
+
+3. Retrieve a list of configuration differences between 2 repositories          
+
+`$ node repo-copy -t https://github.com/sourceOrg/sourceRepo -n myCompareRepo -o myCompareOrg`                                 
+
+### REST API ###
+
+There are three endpoints in the `repo-copy` REST API:
+
+1. `POST /getRepoConfig`     - Return configuration for one ore more repositories.
+2. `POST /repoAudit`         - Return configuration differences between two repositories.
+3. `POST /createRepo`        - Create a new repository based on the configuration of a template repository
+
+#### REST: getRepoConfig ####
+
+The `getRepoConfig` endpoint takes an array of one or more URLs
+`[`
+  `{"URL":"https://github.com/someorg/somerepo"}`
+  `{"URL":"https://github.com/anotherorg/anotherrepo"}`
+ `]`
+ 
+The response contains a JSON model of the repositories configuration.  This is much more complete than that
+ available using either the GitHub v3 or v4 APIs.  Currently the configuration returned contains the following elements
+ 
+ |Element|Desc|
+ |----|----|
+ |`repo`|General repository information|
+ |`tree`|The content tree of the repository (`/refs/head/master`)|
+ |`users`|Users assigned access to the repository, and their permissions|
+ |`teams`|Teams assigned permissions in the repository|
+ |`branches`|Repository branches, with protection configuration|
+ |`hooks`|Repository webhooks|
+ |`labels`|Repository labels|
+ |`topics`|Topics assigned to the repository|
+ |`errors`|Non-fatal errors which occurred during configuration retrieval|
+ 
+ #### REST: repoAudit ####
+ 
+ The `repoAudit` endpoint takes an array of two URLs.  The first is the template repository,
+ the second is the comparison repository.
+ 
+ `[`
+   `{"URL":"https://github.com/someorg/somerepo"}`
+   `{"URL":"https://github.com/anotherorg/anotherrepo"}`
+  `]`
+  
+  The response returns an array containing the elements in the JSON configuration which differ,
+  as well as a description of the differences.  Differences are generated by [deep-diff](https://www.npmjs.com/package/deep-diff)
+  which can detect changes in both data and structure.
+  
+  ```javascript
+  "msg": {
+          "diffs": [
+              {
+                  "type": "Different values",
+                  "path": "repo/name/"
+              },
+              {
+                  "type": "Different values",
+                  "path": "repo/description/"
+              },
+              {
+                  "type": "Array change",
+                  "path": "tree/tree/"
+              },
+              {
+                  "type": "Array change",
+                  "path": "tree/tree/"
+              },
+              {
+                  "type": "Array change",
+                  "path": "tree/tree/"
+              }
+```   
+#### REST: createRepo ####
+
+The `createRepo` endpoint creates a new repository with the same configuration and content as the specified 
+template repository.  If the optional `tokens` argument is supplied, all matching tokens in content in the template repository will
+ be replaced by their corresponding values before being copied into the new repository.  The token format to use in template content is `<token>`.
+ 
 ```javascript
-{"newRepoOwner":"OrgOrUser"
-,"newRepoName":"aRepoName"
-,"newRepoTemplate":"default"
-,"newRepoRequester":"someguy"}
-```
-
-### Modes of operation
-    
-Repo-template performs 2 functions:
-    
-1. Create Pull Requests requesting new repositories.
-2. Responding to repo request Pull Requests, creating new repositories when they are merged.
-    
-In all cases, you can configure repo-template to:
-    
- - Create a repository
- - Add teams and individuals as collaborators
- - Create branches
- - Configure branch protection
- - Configure webhooks
-    
-#### Postman REST API call configurations
-
-If you use [postman](https://www.getpostman.com/docs/), you can import and use
-the postman collection stored in `./tests/repo-template-postman_collection.json`.  Just be sure to
-replace the place-holders with a properly scoped GitHub PAT.
-    
-#### Future work
-
-  Some ideas which seem useful include:
-  - [ ] Specify an existing repository as a template
-  - [ ] Specify a repository and create a configuration file describing it for future use
-  - [X] Parse Pull Requests on merge for specific text which would trigger a new repository build.  Parameters to be included in the body of the PR
-  - [X] Include webhooks in configuration of new repositories
-  - [X] Manage configuration data in a repository rather than the filesystem.
-  
-#### TODO
-
-  - [ ] Add tests
-  - [X] Add provision for passing username and PAT as part of the request to the server
-  - [X] Add provision to flush job log to file.
-    
-### Command line Usage
-Usage:  `repo-template.sh cmd <options>`
-
-  Create a copy of a repository from a configuration file.  
-  
-  - Create a repository
-  - Add teams and individuals as collaborators
-  - Create branches
-  - Configure branch protection
-  
- #### COMMANDS
-
-| Command | Description |
-| -------- | ---------- |
-| `start` | Start the repo-template server.  Returns JSON with the jobID |
-| `stop` | Stop the repo-template server |
-| `tunnel` | Start an nginix proxy.  Useful for testing webhooks |
-| `suspend` | Stop the repo-template server from resopnding to requests |
-| `resume` | Unsuspend the repo-template server so that it resopnds to requests |
-| `status` | Return whether the server is suspended or responding to commands |
-| `create-repo targetHost newRepoOwner newRepoName newRepoTemplate newRepoRequester` | Create a new repository on 'github.foo.com' named 'NewRepo', using the parameters defined in ./config/repo_templates/default.json and owned by the octocat org. |
-
-
- OPTIONS:
-
-| Option | Description |
-| ------ | ----------- |
-| `targetHost` | GitHub.com or a GHE server |
-| `newRepoName` | Name for the new repository |
-| `newRepoTemplate` | Configuration file stored in ./config/repo_templates to use in creating the new repository |
-| `newRepoOwner` | Name of a GitHub org to own the new repo |
-| `newRepoRequester` | Name of a GitHub user requesting the repository.|
-
- EXAMPLES:
-
-  Start the repo-template server.  
-
-    repo-template start
-     
-  Stop the repo-template server:
-
-      repo-template stop
-
-  Suspend the repo-template server so that it won't respond to requests
-
-      repo-template suspend
-
-  Resume the repo-template server responding to requests
-
-      repo-template resume
-
-  Get the status of the repo-template server, whether it is responding to
-  events or suspended
-
-      repo-template status
-      
-## Calling the Server using REST
-
-All repo template functionality is available through the REST API.
-
-| Endpoint | Parameters | Description |
-| -------- | ----------- | ---------- |
-| /suspend | - | Suspend the server |
-| /resume| - | Resume the server |
-| /pullrequest | - | Endpoint to trap Pull Request merge events.  Configure as a repository webhook |
-| /stop | - | Shutdown the server |
-| /status | `jobID` (optional) - ID of the job for which to report status<br/>`format` - If `"html"` return HTML, otherwise return JSON | Call with no arguments to return whether the server is suspended or not.  Call with jobID parameters to get the log for that job.  Optionally return results as JSON or HTML |
-| /requestRepo | `targetHost` - Host to create the repository on<br/>`newRepoName` - Name of the new repository<br/>`configName` - Repository configuration to use<br/>`orgName` - Organization owning the new Repo<br/>`userPAT` - PAT of an org or site admin<br/>`username` - Username corresponding to the userPAT| Create a repository with the specified configuration|
-
-              
-## Responding to Pull Requests
-              
-If you want repo-template to automatically create new repositories when request Pull Requests are merged,
-you'll need to create a webhook.  
-
-1. Create a webhook in a repository pointing to https://<your_server>:<your_port>/pullrequest endpoint
-2. Configure the webhook to respond to Pull Request events and push events.
-
-To create a repository request:
-
-Create a file in the repository configured to serve such requests and include the following JSON:
-
-1. Include configuration parameters as well as the REPOSITORY_REQUEST token in the body of the PR.  Be sure to replace the values with those meaningful in your environment:
-
-```JSON
 {
- "newRepoOwner":"someid"
-,"newRepoName":"aName"
-,"newRepoTemplate":"aTemplate"
-,"newRepoRequester":"someguy"
+	 "templateRepoURL":"https://github.com/myorg/myrepo"
+	,"newRepoOwner":"anotherorg"
+	,"newRepoName":"NewRepo"
+	,"tokens": [
+    ["customer", "My Customer"],
+    ["PRP", "Bryan Cross"],
+    ["PRPEmail", "bryancross@github.com"],
+    ["PRPGitHubID", "@bryancross"],
+    ["CustomerLogoURL", "https://www.foo.com/someimage.jpg"]
+    ]
 }
 ```
- 
-2. Commit the file to a new branch
-3. Create a Pull Request against the branch configured for this purpose by the `repoRequestBranch` parameter in 
- `./config/config-example.json`
-4. When the PR is merged, the webhook will send the configuration parameters to the /pullrequest endpoint.
-
-Once the repository is created, repo-template will create an issue with a link to the log file for the 
-creation process
-
-##  Configuration
-
-#### Request Repository 
- 
- Repo-template is intended work as a webhook service against a specially designated and configured _request repository_.  
- Users will commit configuration files referencing pre-defined templates, and then create Pull Requests in this repository with 
- those commits.  Administrators can then review the Pull Requests, make changes to the configuration files, and then merge or 
- deny the Pull Request.  Repo-Template will automatically create repositories according to the configuration files when the 
- pull request is merged.
- 
-#### Request Repository configuration
-
-1. Create a repository, e.g., repoRequests
-2. Protect the master branch, limiting those who can push to the branch to a team tasked with reviewing and approving 
-repository creation requests.  
-3. Create a webhook pointing to the `pullrequest` endpoint on your instance of the repo-template server.
-5. Grant access to whomever in your organization you'd like to be able to make requests for new repositories.
-
-#### Application configuration
-
-There are two application level configurations:
- - Server configuration: Default parameters for the repo-template server
-
-### Server Configuration
-
-Server configuration is stored in `./config/config-example.json`.  This file also serves
-as the template for the job logging mechanism.    
-
-NOTE: The user specified must currently be a site admin
-
-```json
-  "adminUserName": "",  // Username corresponding to the adminGitHubPAT
-  "authType": "oauth",  // auth type.  Currently only oauth is supported
-  "TemplateSourceHost": "octodemo.com",  // Host for repository where repository configurations are stored
-  "TemplateSourceRepo": "bryancross/repo-template",  // Repository where repository configurations are stored
-  "TemplateSourcePath": "config/repo_templates",  // Path in repository where repository configurations are stored
-  "TemplateSourceBranch": "master" //Branch where the production versions of templates are stored
-  "repoDescriptionSuffix": "--Created by repo-template",  // Suffix appended to repository descriptions
-  "commitMsg": "Committed by repo-template" //Commit message for configuration files committed by repo-template
-  "callbackURL": "https://somewhere" //Public URL for the server, used in creating links to log files, etc.
-  "userAgent": "repo-template",  // User agent to use in GitHubAPI REST calls
-  "gitAPIDebug": false,  // Set debug flag for GitHubAPI
-  "repoRequestHost": "octodemo.com" //Host for the repo request repo.
-  "repoRequestRepo": "rebelware/repoRequests" //The repository where repo-template will create Pull Requests
-  "repoRequestBranch": "master" //Branch repo-template will watch for PR merges containing repository requests
-  "repoRequestPRLabels": [  //labels to assign to the repo request PR
-  "Repo Request"
-  ],
-  "repoRequestPRAssignees": [ //Assignees to assign to the repo request PR
-         "admackbar"
-       ]
-```
-
-### Command line configuration
-
-THIS SECTION TBD
-
-
-`REPO_TEMPLATE_URL=http://localhost:3000`
-
-## Repository Configuration
-    
-Configuration data for new repositories are stored in JSON files in the `./config/repo_templates` directory in the repo-template repo.
-    
-There are 6 sections in the file:
-
- - Header: Info about the configuration, including it's name
- - Repository Attributes: Configuration information about the repository
- - Teams: Teams to be added as collaborators.
- - Branches: Branches to be created
- - Directories: Directories to be created in the new repository (not implemented)
- - Files: Files to be copied into the new repository (not implemented)
-    
-### Repository Configuration: Header
-The header section identifies the configuration:
-    
-```json
-  "configName":"default" // The name of the configuration to be specified when calling the server
-  ,"configType":"repository" //The configuration type, currently only 'repository'
-  ,"owningOrganization":"bryancross" //Owning organization
-```    
-
-### Repository Configuration: Repository Attributes
-
-This section conforms to the GitHub API options specified in the Repository Create
-API call.
-
-For more information, see the [API Docs](https://developer.github.com/v3/repos/#create)
-For more information on the Preview API options for merging pull requests, see the 
-relevant [blog post](https://developer.github.com/changes/2016-09-26-pull-request-merge-api-update/)
-
-```json
- "name": "Default",  // Repository name.  Replaced by newRepoName
-  "description": "Default description",  //A short description of the repository
-  "homepage": "https://github.com",  //A URL with more information about the repository
-  "private": false,  // true to create a private repository, or false to create a public one
-  "has_issues": true,  // true to enable issues for the repository, false to disable them
-  "has_projects": true,  // true to enable projects for the repository, false to disable them
-  "has_wiki": true,  // true to enable the wiki for this repository, false to disable it
-  "auto_init": true,  //true to create an initial commit with an empty README.md
-  "gitignore_template": "",  // Desired language or platform .gitignore template to apply
-  "license_template": "mit",  // Desired LICENSE template to apply
-  "allow_rebase_merge": true,  // true to allow rebase-merging pull-requests.
-  "has_downloads": true,  // true to enable downloads
-  "allow_squash_merge": true,  // true to allow squash-merging pull requests
-  "allow_merge_commit": true,  // true to allow merging pull requests with a merge commit
-  "team_id": -1  // ID of the team that will be granted access to this repository.  Currently not used.
-```
-
-### Repository Configuration: Teams
-
-This section identifies teams to be added as collaborators to the new repository.
-
-This section generally conforms to the GitHub API options specified in the Teams section
-of the GitHub API.  The exception is that you can specify a team by name.
-
-For more information, see the [API Docs](https://developer.github.com/v3/orgs/teams/#add-or-update-team-repository)
-
-```json
-"teams":
-    [
-      {
-         "team":"Developers",  // Team name
-        "permission":"push" // Permissions
-      }
-      ,...
-```
-
-### Repository Configuration: Branches
-
-This section identifies branches to be created in the new repository, as well as 
-protections to be applied to those branches.  These conform to the Update branch
-protection call in the GitHub API.
-
-For more information, see the [API Docs](https://developer.github.com/v3/repos/branches/#update-branch-protection)
-
-```json
-"branches":
-  [
-    {
-      "name":"master", //branch name
-      "protection": {
-        "required_status_checks": { //enable required status checks 
-          "include_admins": true, //Include admins
-          "strict": true, //Require branches to be up to date before merging
-          "contexts": [
-            "continuous-integration/travis-ci" //Reqired status contexts
-          ]
-        },
-        "required_pull_request_reviews": { //Require PR reviews
-          "include_admins": false //Include admins in PR reviews
-        },
-        "enforce_admins": true, 
-        "restrictions": { //Users and teams who can push to the branch
-          "users": [
-            "Mario"
-          ],
-          "teams": [
-            "DevLeads"
-          ]
-        }
-      }
-    }
-    ,...
-
-```
+           

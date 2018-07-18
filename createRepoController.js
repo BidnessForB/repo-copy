@@ -1,8 +1,14 @@
+#!/usr/bin/env node;
+
 const Repo = require('./lib/RepoController.js');
 const HttpDispatcher = require('httpdispatcher');
 const http = require('http');
-
+var PORT = 3000;
 try {
+    if(process.argv[2] && typeof eval(process.argv[2]) === 'number' && process.argv[2] > 1024 && process.argv[2] < 65535)
+    {
+        PORT = process.argv[2];
+    }
     initHTTPServer();
 }
 catch (err) {
@@ -49,8 +55,8 @@ function initHTTPServer() {
             }
             });
     // Startup the server
-    server.listen(3000, () => {
-        // Callback when server is successfully listening
+    server.listen(PORT, () => {
+        console.log("Server listening on port " + PORT);
     });
 
 
@@ -65,6 +71,7 @@ function initHTTPServer() {
     process.on('SIGTERM', function () {
         server.close(() => {
             self.shutdown();
+            console.log("Server shutdown successfully");
             });
     });
 };
