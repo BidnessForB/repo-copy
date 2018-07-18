@@ -1,14 +1,15 @@
 {
-  "name": "repo-template",
+  "name": "repo-copy",
   "version": "1.0.0",
   "description": "Create new GitHub repositories based on templates",
-  "main": "repo-template.js",
+  "main": "createRepoController.js",
+  "bin": "./repo-copy_cli-shim.js",
   "scripts": {
     "test": "xo && server.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bryancross/repo-template.git"
+    "url": "https://github.com/bidnessforb/repo-copy.git"
   },
   "keywords": [
     "repository",
@@ -18,9 +19,9 @@
   "author": "bryancross@github.com",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bryancross/repo-template/issues"
+    "url": "https://github.com/bidnessforb/repo-copy/issues"
   },
-  "homepage": "https://github.com/bryancross/repo-template#readme",
+  "homepage": "https://github.com/bidnessforb/repo-copy#readme",
   "dependencies": {
     "@octokit/rest": "^15.9.3",
     "command-line-args": "^5.0.2",
@@ -35,12 +36,12 @@
     "xo": "^0.18.2"
   },
   "engines": {
-    "node": "6.11.1"
+    "node": "10.6.0"
   },
   "xo": {
     "overrides": [
       {
-        "files": "worker.js",
+        "files": "repoController.js",
         "rules": {
           "camelcase": [
             "error",
