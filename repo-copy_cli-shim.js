@@ -1,11 +1,13 @@
 #!/usr/bin/env node;
+/*jshint esversion: 6 */
 
+"use strict";
 
 /**
  * Created by bryancross on 7/13/18.
  */
 
-const repoController = require('./lib/repoController');
+const RepoController = require('./lib/repoController');
 const cla = require('command-line-args');
 const clu = require('command-line-usage');
 
@@ -90,7 +92,7 @@ if (args.help) {
     console.log(clu(clSections));
     process.exit(0);
 }
-var errs = validateArgs(args);
+const errs = validateArgs(args);
 
 if (errs.length > 0) {
     console.log('errors: ' + errs);
@@ -114,7 +116,7 @@ function validateArgs(args) {
     if (validModes.indexOf(args.mode) < 0) {
         errs.push('Invalid mode. valid values are get, create, audit');
     }
-    if (args.mode == 'create' && !(args.targetRepoName && args.targetRepoOwner)) {
+    if (args.mode === 'create' && !(args.targetRepoName && args.targetRepoOwner)) {
         errs.push('Missing target repo information.  Please specify targetRepoName and targetRepoOwner');
     }
 
@@ -122,21 +124,22 @@ function validateArgs(args) {
 }
 
 
-async
-function execute() {
-    var repoData;
-    var repo = new repoController();
+async function execute() {
+
+    var repo = new RepoController();
+    var fakeRequest = {};
+    var fakebody;
+
     try {
         //build a fake request
-        var fakeRequest = {};
-        var fakebody;
-        if (args.mode == 'get') {
+
+        if (args.mode === 'get') {
             fakebody = [{URL: args.templateRepoURL}];
         }
-        else if (args.mode == 'audit') {
+        else if (args.mode === 'audit') {
             fakebody = [{URL: args.templateRepoURL}, {URL: args.compareRepoURL}];
         }
-        else if (args.mode == 'create') {
+        else if (args.mode === 'create') {
             fakebody = {
                 templateRepoURL: args.templateRepoURL,
                 newRepoOwner: args.newRepoOwner,
