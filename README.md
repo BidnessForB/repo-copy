@@ -12,6 +12,10 @@ The application can be run as a REST service or a command line application.
 1. Clone the [repo-copy repo](https://github.com/bidnessforb/repo-copy)
 1. Run `npm install`
 1. Run the server or the command line application with appropriate parameters (see below)
+1. If using the command line interface, set an environment variable called GH_PAT equal to your properly scoped 
+ GitHub Personal Access Token (PAT).
+ 
+`$ export GH_PAT=<your token>`
 
 ### Running as a server
 
