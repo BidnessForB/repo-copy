@@ -1,4 +1,4 @@
-const Repo = require('./lib/repoController.js');
+const Repo = require('./lib/RepoController.js');
 const HttpDispatcher = require('httpdispatcher');
 const http = require('http');
 
@@ -11,20 +11,23 @@ catch (err) {
 }
 
 function initHTTPServer() {
-    var dispatcher = new HttpDispatcher();
+    let dispatcher;
+    let server;
+
+    dispatcher = new HttpDispatcher();
     dispatcher.onPost('/createRepo', function (req, res) {
-        var repo = new Repo();
+        let repo = new Repo();
         repo.executeRest(req, res, 'create');
     });
     dispatcher.onPost('/getRepoConfig', function (req, res) {
-        var repo = new Repo();
+        let repo = new Repo();
         repo.executeRest(req, res, 'get');
     });
     dispatcher.onPost('/repoAudit', function (req, res) {
-        var repo = new Repo();
+        let repo = new Repo();
         repo.executeRest(req, res, 'audit');
     })
-    var server = http.createServer((request, response) = > {
+    server = http.createServer((request, response) => {
             try {
                 response.respond = function (status, msg, err) {
                 var respText = {};
@@ -34,43 +37,34 @@ function initHTTPServer() {
                 }
                 this.writeHead(status, {'Content-Type': 'application/json'});
                 this.end(JSON.stringify(respText));
-            };
-    dispatcher.dispatch(request, response);
-}
-catch
-    (err)
-    {
-        if (err.message === 'SHUTDOWN') {
-            throw err;
-        }
-        response.respond(503, "Error dispatching HTTP request", err);
-    }
-})
-    ;
-
+                };
+                dispatcher.dispatch(request, response);
+            }
+            catch (err)
+            {
+                if (err.message === 'SHUTDOWN') {
+                    throw err;
+                }
+                response.respond(503, "Error dispatching HTTP request", err);
+            }
+            });
     // Startup the server
-    server.listen(3000, () = > {
+    server.listen(3000, () => {
         // Callback when server is successfully listening
-
-    }
-)
-    ;
+    });
 
 
     // Cleanup after ourselves if we get nerve-pinched
     process.on('SIGTERM', function () {
-        server.close(() = > {
+        server.close(() => {
             self.shutdown();
-    })
-        ;
+            });
     });
 
     // Cleanup after ourselves if we get nerve-pinched
     process.on('SIGTERM', function () {
-        server.close(() = > {
+        server.close(() => {
             self.shutdown();
-    })
-        ;
-    })
-
+            });
+    });
 };

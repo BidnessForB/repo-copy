@@ -7,7 +7,7 @@
  * Created by bryancross on 7/13/18.
  */
 
-const RepoController = require('./lib/repoController');
+const RepoController = require('./lib/RepoController');
 const cla = require('command-line-args');
 const clu = require('command-line-usage');
 
@@ -97,6 +97,7 @@ const errs = validateArgs(args);
 if (errs.length > 0) {
     console.log('errors: ' + errs);
     console.log(clu(clSections));
+    //noinspection JSUnresolvedVariable
     process.exit(1);
 }
 
@@ -124,7 +125,7 @@ function validateArgs(args) {
 }
 
 
-async function execute() {
+async function execute() { //jshint ignore:line
 
     var repo = new RepoController();
     var fakeRequest = {};
