@@ -5,6 +5,7 @@ const repoController = require('./lib/repoController');
 const cla = require('command-line-args');
 const clu = require('command-line-usage');
 
+
 const optionDefinitions = [
     {name: 'templateRepoURL', alias: 't', type: String}
     ,{name: 'targetRepoName',alias:'n', type: String}
@@ -131,13 +132,39 @@ async function execute()
     var repo = new repoController();
     try
     {
-        repoData = await repo.execute(args);
-        console.log(JSON.stringify(repoData));
+        //build a fake request
+        var fakeRequest = {};
+        var fakebody;
+        if(args.mode == 'get')
+        {
+            fakebody = [{URL:args.templateRepoURL}];
+        }
+        else if(args.mode == 'audit')
+        {
+            fakebody = [{URL:args.templateRepoURL},{URL:args.compareRepoURL}]
+        }
+        else if (args.mode == 'create')
+        {
+            fakebody = {templateRepoURL:args.templateRepoURL
+                            ,newRepoOwner:args.newRepoOwner
+                            ,newRepoName:args.newRepoName
+                            ,mode:args.mode
+                            ,tokens:[]
+            }
+        }
+        fakeRequest.body = JSON.stringify(fakebody);
+        fakeRequest.headers = {};
+        fakeRequest.headers.authorization = process.env.GH_PAT;
+        repo.executeRest(fakeRequest,null,args.mode, function(data){
+            console.log(JSON.stringify(data));
+            process.exit(0);
+        });
     }
     catch(err)
     {
         console.log("Error: " + err.message);
+        process.exit(1);
     }
-    process.exit(0);
+
 }
 
