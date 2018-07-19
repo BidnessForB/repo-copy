@@ -35,6 +35,9 @@ just use node:
 
 See [REST API](#REST-API) for information on making REST calls to the server.
 
+#### Authorization ####
+Use the `Authorization` header with your GitHub PAT to authenticate to GitHub. 
+
 ### Running on the command line
 Assuming `npm install` worked as advertised, you can run repo-copy on the command line
 using the `repo-copy` command.  If not, run the shim using node:
