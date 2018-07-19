@@ -1,0 +1,39 @@
+{
+  "type":"object",
+  "properties":{
+	"templateRepoURL": {"$ref":"#/definitions/GitHubURL"}
+  ,"newRepoOwner": {"$ref":"#/definitions/GitHubName"}
+  ,"newRepoName": {"$ref":"#/definitions/GitHubName"}
+  ,"tokens": {
+	  "type":"array",
+	  "items": {"$ref":"#/definitions/token"}
+	}
+  },
+  "required":["templateRepoURL","newRepoOwner","newRepoName"],
+  "additionalProperties":false,
+  "definitions":{
+	"GitHubURL":{
+	  "properties":{
+		"URL": {
+		  "type":"string"
+		,"pattern":"https://github.com/[a-zA-Z0-9-_]+/[a-zA-Z0-9-_]+$"
+
+		,"required":["RequiredProperty","URL"]
+		}
+	  },
+	  "additionalProperties":false
+	},
+	"GitHubName":{
+	  "type":"string",
+	  "pattern":"[a-zA-Z0-9-_]+$"
+	},
+	"token":{
+	  "type":"array",
+	  "items":{
+		"type":"string"
+	  },
+	  "minItems":2,
+	  "maxItems":2
+	}
+  }
+}

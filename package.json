@@ -33,6 +33,7 @@
     "deep-diff": "^1.0.1",
     "hashmap": "^2.3.0",
     "httpdispatcher": "^2.0.1",
+    "jsonschema": "^1.2.4",
     "npm": "^6.1.0"
   },
   "devDependencies": {

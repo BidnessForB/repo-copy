@@ -1,0 +1,26 @@
+{
+  "type":"array",
+  "uniqueItems":true,
+  "minItems": 2,
+  "maxItems":2,
+  "additionalItems":false,
+  "items": {
+	"oneOf":[
+	  {
+		"$ref": "#/definitions/GitHubURL"
+	  }
+	]
+  },
+  "definitions":{
+	"GitHubURL":{
+	  "properties":{
+		"URL": {
+		  "type":"string"
+		,"pattern":"https://github.com/[a-zA-Z0-9-_]+/[a-zA-Z0-9-_]+$"
+		,"required":["RequiredProperty","URL"]
+		}
+	  },
+	  "additionalProperties":false
+	}
+  }
+}
