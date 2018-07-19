@@ -104,27 +104,6 @@ if (errs.length > 0) {
 execute();
 
 
-function validateArgs(args) {
-    const validModes = ['get', 'create', 'audit'];
-    const urlRegExp = /https:\/\/github.com\/[a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+$/g;
-    var errs = [];
-    if (!args.templateRepoURL) {
-        errs.push('Invalid template URL');
-    }
-    if (args.templateRepoURL && !urlRegExp.test(args.templateRepoURL)) {
-        errs.push('Invalid URL: Must be https://github.com/<owner>/<repo>');
-    }
-    if (validModes.indexOf(args.mode) < 0) {
-        errs.push('Invalid mode. valid values are get, create, audit');
-    }
-    if (args.mode === 'create' && !(args.targetRepoName && args.targetRepoOwner)) {
-        errs.push('Missing target repo information.  Please specify targetRepoName and targetRepoOwner');
-    }
-
-    return errs;
-}
-
-
 async function execute() { //jshint ignore:line
 
     var repo = new RepoController();
