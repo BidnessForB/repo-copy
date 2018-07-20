@@ -7,6 +7,11 @@ Utility program which:
 
 The application can be run as a REST service or a command line application.
 
+### Try it out on Heroku ###
+Repo-copy is running on Heroku:
+
+[https://still-shelf-20156.herokuapp.com](https://still-shelf-20156.herokuapp.com)
+
 ### Getting Started
 
 1. Clone the [repo-copy repo](https://github.com/bidnessforb/repo-copy)
