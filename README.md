@@ -94,7 +94,7 @@ Arguments will vary depending on the _mode_ you're using.
 |`-k`  |`--tokens`    |array  |      |`mode=create` only. List of key/value pairs, used to substitute values for tokens in template repository content copied into a new repository.  Not implemented for CI  |
 
 
-__NOTE:__Tokens are not yet supported on the command line.  
+__NOTE:__ Tokens are not yet supported on the command line.  
  
 Examples
 
