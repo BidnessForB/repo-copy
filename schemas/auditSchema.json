@@ -16,7 +16,7 @@
 	  "properties":{
 		"URL": {
 		  "type":"string"
-		,"pattern":"https://github.com/[a-zA-Z0-9-_]+/[a-zA-Z0-9-_]+$"
+		,"pattern":"https://(www.)?github.com/[a-zA-Z0-9-_]+/[a-zA-Z0-9-_]+$"
 		,"required":["RequiredProperty","URL"]
 		}
 	  },
