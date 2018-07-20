@@ -58,9 +58,11 @@ function initHTTPServer() {
                 response.respond(503, "Error dispatching HTTP request", err);
             }
             });
-    // Startup the server
+    // Startup the server.  If running on Heroku, use Heroku port, otherwise configured PORT
+
+
     server.listen(process.env.PORT || PORT, () => {
-        console.log("Server listening on port " + PORT);
+        console.log("Server listening on port " + (process.env.PORT || PORT));
     });
 
 
