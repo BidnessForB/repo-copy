@@ -24,7 +24,36 @@ Repo-copy is running on Heroku:
  
 `$ export GH_PAT=<your token>`
 
-### Running as a server
+### Logging/Debugging
+
+Repo-copy uses the [DEBUG](https://www.npmjs.com/package/debug) library.  There are three scopes;  `` each with 3 sub-scopes.  
+Just set the DEBUG environment variable to include the scopes for which you want logging/debugging info.
+  
+  |Scope | Description | 
+  |-----|-----|
+  |Repo|The server, `index.js`|
+  |repoCreator|The module that handles creating repos, `repoCreator.js`|
+  |repoGetter | The module that handles retrieving repo configuration info, `repoGetter.js`|
+  
+  
+The three sub-scopes are:
+  
+  |Sub-Scope|Description|
+  |-----|-----|
+  |appDebug|Debugging output|
+  |appError|Error output|
+  |appOutput|Command output, generally should leave this on|
+  
+For example, to enable just application output:
+  `DEBUG=Repo:appOutput`
+  
+To add debugging info from `repoGetter.js`:
+  `DEBUG=Repo:appOutput,repoGetter:appDebug`
+
+To add everything:
+  `DEBUG=*`
+
+### Running as a server 
 
 To start the server:
 1. `cd` to the repo-copy project directory.
@@ -63,20 +92,22 @@ Arguments will vary depending on the _mode_ you're using.
 | `-o`   |`--targetRepoOwner`    |String    |      |`mode=create` only. Owner (org) of the repo to be created    |
 |`-h`  |`--help`    |    |      | Display help   |
 |`-k`  |`--tokens`    |array  |      |`mode=create` only. List of key/value pairs, used to substitute values for tokens in template repository content copied into a new repository.  __NOTE:__Not implemented for CI  |
+
+__NOTE:__Tokens are not yet supported on the command line.  
  
 Examples
 
 1. Retrieve repository configuration information 
 
-`$ node repo-copy -t https://github.com/myorg/myrepo`                           
+`$ node cli.js -m get -t https://github.com/myorg/myrepo`                           
   
 2. Create a new repository copying the configuration of a template repository   
 
-`$ node repo-copy -t https://github.com/myorg/myrepo -n myNewRepo -o myOtherOrg`           
+`$ node cli.js -m create -t https://github.com/myorg/myrepo -n myNewRepo -o myOtherOrg`           
 
 3. Retrieve a list of configuration differences between 2 repositories          
 
-`$ node repo-copy -t https://github.com/sourceOrg/sourceRepo -n myCompareRepo -o myCompareOrg`                                 
+`$ node cli.js -m audit -t https://github.com/sourceOrg/sourceRepo -n myCompareRepo -o myCompareOrg`                                 
 
 ### REST API ###
 

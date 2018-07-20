@@ -92,14 +92,6 @@ if (args.help) {
     console.log(clu(clSections));
     process.exit(0);
 }
-const errs = validateArgs(args);
-
-if (errs.length > 0) {
-    console.log('errors: ' + errs);
-    console.log(clu(clSections));
-    //noinspection JSUnresolvedVariable
-    process.exit(1);
-}
 
 execute();
 
@@ -122,9 +114,8 @@ async function execute() { //jshint ignore:line
         else if (args.mode === 'create') {
             fakebody = {
                 templateRepoURL: args.templateRepoURL,
-                newRepoOwner: args.newRepoOwner,
-                newRepoName: args.newRepoName,
-                mode: args.mode,
+                newRepoOwner: args.targetRepoOwner,
+                newRepoName: args.targetRepoName,
                 tokens: []
             };
         }
