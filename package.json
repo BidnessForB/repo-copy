@@ -8,7 +8,8 @@
     "start-server": "./createRepoController.js"
   },
   "scripts": {
-    "test": "xo && server.js"
+    "test": "xo && server.js",
+    "start":"node createRepoServer.js"
   },
   "repository": {
     "type": "git",
