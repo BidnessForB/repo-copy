@@ -4,6 +4,7 @@ const Repo = require('./lib/RepoController.js');
 const HttpDispatcher = require('httpdispatcher');
 const http = require('http');
 const fs = require('fs');
+const Markdown = require('markdown-to-html').GithubMarkdown;
 var PORT = 3000;
 try {
     if(process.argv[2] && typeof eval(process.argv[2]) === 'number' && process.argv[2] > 1024 && process.argv[2] < 65535)
@@ -20,8 +21,34 @@ catch (err) {
 function initHTTPServer() {
     let dispatcher;
     let server;
-
+    let homepage;
     dispatcher = new HttpDispatcher();
+    dispatcher.onGet('/', function (req,res)
+    {
+        try{
+            let md = new Markdown();
+
+            let opts = {title:"Repo-copy",stylesheet:'web/repo-copy.css'};
+            md.bufmax = 2048;
+            md.once('end',function() {
+                res.end();
+            })
+            md.render('./README.md',opts,function(err) {
+                if(err){
+					res.writeHead(200,{'Content-Type':'text/markdown'});
+					res.end('## Error retrieving homepage ##');
+					return;
+                }
+				md.pipe(res);
+                return;
+            });
+        }
+        catch(err)
+        {
+			res.writeHead(200,{'Content-Type':'text/markdown'});
+			res.end('## Error retrieving homepage ##');
+		}
+    });
     dispatcher.onPost('/createRepo', function (req, res) {
         let repo;
         repo = new Repo();
