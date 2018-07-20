@@ -26,7 +26,7 @@ Repo-copy is running on Heroku:
 
 ### Logging/Debugging
 
-Repo-copy uses the [DEBUG](https://www.npmjs.com/package/debug) library.  There are three scopes;  `` each with 3 sub-scopes.  
+Repo-copy uses the [DEBUG](https://www.npmjs.com/package/debug) library.  There are three scopes, each with 3 sub-scopes.  
 Just set the DEBUG environment variable to include the scopes for which you want logging/debugging info.
   
   |Scope | Description | 
@@ -44,13 +44,13 @@ The three sub-scopes are:
   |appError|Error output|
   |appOutput|Command output, generally should leave this on|
   
-For example, to enable just application output:
+For example, to enable just application output:<br>
   `DEBUG=Repo:appOutput`
   
-To add debugging info from `repoGetter.js`:
+To add debugging info from `repoGetter.js`:<br>
   `DEBUG=Repo:appOutput,repoGetter:appDebug`
 
-To add everything:
+To add everything:<br>
   `DEBUG=*`
 
 ### Running as a server 
