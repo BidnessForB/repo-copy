@@ -59,7 +59,7 @@ function initHTTPServer() {
             }
             });
     // Startup the server
-    server.listen(PORT, () => {
+    server.listen(process.env.PORT || PORT, () => {
         console.log("Server listening on port " + PORT);
     });
 
