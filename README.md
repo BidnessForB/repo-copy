@@ -91,7 +91,8 @@ Arguments will vary depending on the _mode_ you're using.
 | `-n`   |`--targetRepoName`    |String    |      |`mode=create` only. Name of the repo to be created    |
 | `-o`   |`--targetRepoOwner`    |String    |      |`mode=create` only. Owner (org) of the repo to be created    |
 |`-h`  |`--help`    |    |      | Display help   |
-|`-k`  |`--tokens`    |array  |      |`mode=create` only. List of key/value pairs, used to substitute values for tokens in template repository content copied into a new repository.  __NOTE:__Not implemented for CI  |
+|`-k`  |`--tokens`    |array  |      |`mode=create` only. List of key/value pairs, used to substitute values for tokens in template repository content copied into a new repository.  Not implemented for CI  |
+
 
 __NOTE:__Tokens are not yet supported on the command line.  
  
