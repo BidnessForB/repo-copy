@@ -126,7 +126,7 @@ The `getRepoConfig` endpoint takes an array of one or more URLs
   `{"URL":"https://github.com/anotherorg/anotherrepo"}`
  `]`
  
-The response contains a JSON model of the repositories configuration.  This is much more complete than that
+The response contains a JSON model of the repositories configuration.  This is more complete than that
  available using either the GitHub v3 or v4 APIs.  Currently the configuration returned contains the following elements
  
  |Element|Desc|
