@@ -1,5 +1,7 @@
 # repo-copy
 
+[![Git](https://app.soluble.cloud/api/v1/public/badges/36238c36-6c85-479e-90c9-d0632ba62b03.svg?orgId=547292756607)](https://app.soluble.cloud/repos/details/github.com/bidnessforb/repo-copy?orgId=547292756607)  
+
 on [GitHub](https://github.com/bidnessforb/repo-copy)
 
 Utility program which:
