@@ -54,6 +54,11 @@ function initHTTPServer() {
         repo = new Repo();
         repo.executeRest(req, res, 'create');
     });
+    dispatcher.onPost('/dump', function(req,res) {
+        res.respond(200,'OK');
+        let bod = JSON.parse(req.body);
+        console.log(bod);
+    })
     dispatcher.onPost('/getRepoConfig', function (req, res) {
         let repo;
         repo = new Repo();
