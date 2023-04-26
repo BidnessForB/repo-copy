@@ -36,7 +36,7 @@
     "httpdispatcher": "^2.0.1",
     "jsonschema": "^1.2.4",
     "markdown-to-html": "0.0.13",
-    "npm": "^6.1.0"
+    "npm": "^9.6.5"
   },
   "devDependencies": {
     "xo": "^0.18.2"
