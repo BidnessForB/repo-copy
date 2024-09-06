@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/bidnessforb/repo-copy#readme",
   "dependencies": {
-    "@octokit/rest": "^15.9.3",
+    "@octokit/rest": "^16.0.4",
     "command-line-args": "^5.0.2",
     "command-line-usage": "^5.0.5",
     "debug": "^3.1.0",
@@ -36,7 +36,7 @@
     "httpdispatcher": "^2.0.1",
     "jsonschema": "^1.2.4",
     "markdown-to-html": "0.0.13",
-    "npm": "^6.1.0"
+    "npm": "^9.7.2"
   },
   "devDependencies": {
     "xo": "^0.18.2"
